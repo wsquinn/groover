@@ -1,6 +1,6 @@
 from flask import render_template, flash, redirect
-from app import app
-from app.forms import LoginForm
+from application import app
+from application.forms import LoginForm
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 from nltk.tokenize import word_tokenize
 import re
