@@ -1,6 +1,6 @@
 # Groover
 
-To run, cd into your home directory and run
+To run, cd into your project directory and run
 `source venv/bin/activate`
 then run `flask run`.
 
