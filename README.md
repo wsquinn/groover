@@ -1,4 +1,4 @@
-# groover
+# Groover
 
 To run, cd into your home directory and run
 `source venv/bin/activate`
