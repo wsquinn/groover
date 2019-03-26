@@ -1,0 +1,4 @@
+flask_wtf
+gensim
+nltk
+bs4
