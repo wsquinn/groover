@@ -7,7 +7,9 @@ import re
 import urllib.request
 from bs4 import BeautifulSoup
 import csv
-
+import requests
+import json
+import os
 
 @app.route('/')
 @app.route('/index')
@@ -16,7 +18,7 @@ def index():
     return render_template('index.html', title='Home', user=user)
 
 @app.route('/lookup', methods=['GET', 'POST'])
-def loopkup():
+def lookup():
     form = LoginForm()
     if form.validate_on_submit():
         return redirect('/recommendations/' + form.artist.data + '/' +  form.title.data)
@@ -24,8 +26,8 @@ def loopkup():
 
 @app.route('/recommendations/<artist>/<title>')
 def recommendations(artist, title):
-    flash('requested song: {} ~ {}'.format(
-        artist, title))
+    #TODO: store this in a file so we don't have to do this over and over
+    #TODO: add album art to each track in this csv
     docLabels = []
     with open('data/songdata.csv') as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
@@ -37,15 +39,28 @@ def recommendations(artist, title):
                     print("\rReading documents: %d" % len(docLabels), end='', flush=True)
             line_count += 1
 
+    url = 'matcher.track.get?q_track={}&q_artist={}&format={}'.format(title, artist,'json')
+    req_url = 'http://api.musixmatch.com/ws/1.1/{}&apikey={}'.format(url, os.environ.get("MUSIX_API_KEY"))
+    data = requests.get(req_url)
+    data = json.loads(data.text)
+    if data["message"]["header"]["status_code"] == 200:
 
-        artist = artist.lower()
-        song_title = title.lower()
-        # remove all except alphanumeric characters from artist and song_title
-        artist = re.sub('[^A-Za-z0-9]+', "", artist)
-        song_title = re.sub('[^A-Za-z0-9]+', "", song_title)
-        if artist.startswith("the"):    # remove starting 'the' from artist e.g. the who -> who
-           artist = artist[3:]
-        url = "http://azlyrics.com/lyrics/"+artist+"/"+song_title+".html"
+        matched_artist = data["message"]["body"]["track"]["artist_name"]
+        matched_title = data["message"]["body"]["track"]["track_name"]
+
+        flash('requested song: {} ~ {}'.format(
+            matched_artist, matched_title))
+
+        matched_artist = matched_artist.lower()
+        matched_title = matched_title.lower()
+
+        # remove all except alphanumeric characters from matched_artist and matched_title
+        matched_artist = re.sub('[^A-Za-z0-9]+', "", matched_artist)
+        matched_title = re.sub('[^A-Za-z0-9]+', "", matched_title)
+
+        if matched_artist.startswith("the"):    # remove starting 'the' from matched_artist e.g. the who -> who
+           matched_artist = matched_artist[3:]
+        url = "http://azlyrics.com/lyrics/"+matched_artist+"/"+matched_title+".html"
 
         try:
            content = urllib.request.urlopen(url).read()
@@ -63,17 +78,22 @@ def recommendations(artist, title):
         except Exception as e:
            return "Exception occurred \n" +str(e)
 
+        lyrics = lyrics.strip()
+        lyrics = lyrics.replace('\n',' ')
+        lyrics = re.sub("[\(\[].*?[\)\]]", "", lyrics)
 
+        model= Doc2Vec.load("d2v.model")
+        #to find the vector of a document which is not in training data
+        test_data = word_tokenize(lyrics.lower())
+        v1 = model.infer_vector(doc_words=test_data, alpha=0.025, min_alpha=0.001, steps=55)
+        similar_v1 = model.docvecs.most_similar(positive=[v1])
 
-    model= Doc2Vec.load("d2v.model")
-    #to find the vector of a document which is not in training data
-    test_data = word_tokenize(lyrics.lower())
-    v1 = model.infer_vector(doc_words=test_data, alpha=0.025, min_alpha=0.001, steps=55)
-    similar_v1 = model.docvecs.most_similar(positive=[v1])
-
-    for song in similar_v1:
-        flash('recommended song: {}'.format(
-            docLabels[int(song[0])]
-            ))
+        for song in similar_v1:
+            flash('recommended song: {}'.format(
+                docLabels[int(song[0])]
+                ))
+    else:
+        flash('Sorry, we did not find the track "{}" by {}. Try again?'.format(
+            title, artist))
 
     return render_template('recommendations.html', title='Your recommendations')
