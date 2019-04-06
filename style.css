@@ -1,0 +1,125 @@
+body {
+    background: #fff;
+    font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    font-size: 15px;
+    line-height: 1.7;
+    margin: 0;
+    padding: 30px;
+    text-align: center;
+    color: #4A4A4A;
+}
+h1 {
+    border-bottom: 3px solid #F7C6CD;
+    margin: auto;
+    font-size: 2.5em;
+    font-weight: bold;
+    padding: 2px;
+    letter-spacing: 1.5px;
+    background-color: #FBE3E7;
+    color: #4A4A4A;
+}
+h2 {
+    margin: auto;
+    font-size: 2em;
+    font-weight: bold;
+    padding: 6px;
+    letter-spacing: 1.5px;
+    color: #FFFFFF;
+}
+h3 {
+    font-size: 1.8em;
+}
+input {
+    font-size: 1em;
+    outline: none;
+}
+button {
+    font-size: 1em;
+    outline: none;
+}
+#loading-text {
+    display: none;
+}
+#container-thumbnails {
+    width: 99%;
+    margin: 0 auto;
+    margin-top: 15px;
+    vertical-align: middle;
+    text-align: center;
+}
+.thumbnail {
+    vertical-align: middle;
+    margin: 10px;
+    width: 150px;
+    height: 150px;
+    overflow: hidden;
+}
+#container-lightbox {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(0, 0, 0, .82);
+    display: none;
+    text-align: center;
+}
+#lightbox {
+    text-align: center;
+    height: 85%;
+    width: 85%;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+}
+#lightbox img {
+    position: absolute;
+    margin: auto;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    min-height: 60%;
+    max-height: 80%;
+    max-width: 90%;
+    text-align: center;
+}
+#exit-button {
+    background-color: #FF4545;
+    color: #FFFFFF;
+    height: 30px;
+    width: 30px;
+    top: 0;
+    right: 0;
+    font-size: 20px;
+    position: absolute;
+    border: none;
+    outline: none;
+}
+#right-button {
+    background-color: #FF4545;
+    color: #FFFFFF;
+    height: 30px;
+    width: 30px;
+    top: 50%;
+    right: 0;
+    font-size: 20px;
+    position: absolute;
+    border: none;
+    outline: none;
+}
+#left-button {
+    background-color: #FF4545;
+    color: #FFFFFF;
+    height: 30px;
+    width: 30px;
+    top: 50%;
+    left: 0;
+    font-size: 20px;
+    position: absolute;
+    border: none;
+    outline: none;
+}

@@ -1,0 +1,27 @@
+<html>
+    <head>
+        {% if title %}
+        <title>{{ title }} - Groover</title>
+        {% else %}
+        <title>Groover</title>
+        {% endif %}
+    </head>
+    <body>
+        <div>
+            Groover:
+            <a href="/index">Home</a>
+            <a href="/lookup">Lookup</a>
+        </div>
+        <hr>
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </body>
+</html>
