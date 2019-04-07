@@ -5,4 +5,4 @@ from wtforms.validators import DataRequired
 class LoginForm(FlaskForm):
     artist = StringField('Artist', validators=[DataRequired()])
     title = StringField('Title', validators=[DataRequired()])
-    submit = SubmitField('Get me some recs!')
+    submit = SubmitField('Groove')

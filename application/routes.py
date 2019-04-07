@@ -14,18 +14,22 @@ import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 from markupsafe import Markup, escape
 
-@app.route('/')
+
+@app.route('/', methods=['GET', 'POST'])
+def lookup():
+    form = LoginForm()
+    if form.validate_on_submit():
+        return redirect('/recommendations/' + form.artist.data + '/' +  form.title.data)
+    return render_template('lookup.html', title='Smarter Music Recommendations', form=form)
+
 @app.route('/index')
 def index():
     user = {'username': 'World'}
     return render_template('index.html', title='Home', user=user)
 
-@app.route('/lookup', methods=['GET', 'POST'])
-def lookup():
-    form = LoginForm()
-    if form.validate_on_submit():
-        return redirect('/recommendations/' + form.artist.data + '/' +  form.title.data)
-    return render_template('lookup.html', title='Look up song', form=form)
+@app.route('/about')
+def about():
+    return render_template('about.html', title='About Groover')
 
 @app.route('/recommendations/<artist>/<title>')
 def recommendations(artist, title):
