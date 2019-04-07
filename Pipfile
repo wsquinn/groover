@@ -10,6 +10,7 @@ gensim = "*"
 nltk = "*"
 bs4 = "*"
 Flask-WTF = "*"
+flask = "*"
 
 [requires]
 python_version = "3.7"
