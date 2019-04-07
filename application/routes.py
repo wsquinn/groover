@@ -10,6 +10,9 @@ import csv
 import requests
 import json
 import os
+import spotipy
+from spotipy.oauth2 import SpotifyClientCredentials
+from markupsafe import Markup, escape
 
 @app.route('/')
 @app.route('/index')
@@ -26,7 +29,7 @@ def lookup():
 
 @app.route('/recommendations/<artist>/<title>')
 def recommendations(artist, title):
-    #TODO: store this in a file so we don't have to do this over and over
+    #TODO: store songdata in a json file so we don't have to do this over and over
     #TODO: add album art to each track in this csv
     docLabels = []
     with open('data/songdata.csv') as csv_file:
@@ -50,6 +53,22 @@ def recommendations(artist, title):
 
         flash('requested song: {} ~ {}'.format(
             matched_artist, matched_title))
+
+
+        client_credentials_manager = SpotifyClientCredentials(client_id=os.environ.get("SPOTIFY_CLIENT_ID"), client_secret=os.environ.get("SPOTIFY_CLIENT_SECRET"))
+        spotify = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
+
+        results = spotify.search(q='track:' + matched_title + ' artist:' + matched_artist, type='track')
+        track = results['tracks']['items'][0]
+
+
+        message = Markup("<img src='{url}' />"
+            .format(url=track["album"]["images"][1]["url"]))
+        flash(message, category='success')
+
+        message = Markup("<audio controls src='{url}' />"
+            .format(url=track["preview_url"]))
+        flash(message, category='success')
 
         matched_artist = matched_artist.lower()
         matched_title = matched_title.lower()
