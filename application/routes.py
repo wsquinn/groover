@@ -83,23 +83,24 @@ def recommendations(artist, title):
 
         if matched_artist.startswith("the"):    # remove starting 'the' from matched_artist e.g. the who -> who
            matched_artist = matched_artist[3:]
-        url = "http://azlyrics.com/lyrics/"+matched_artist+"/"+matched_title+".html"
-
+           
+        lyric_url = "http://azlyrics.com/lyrics/"+matched_artist+"/"+matched_title+".html"
         try:
-           content = urllib.request.urlopen(url).read()
-           soup = BeautifulSoup(content, 'html.parser')
-           lyrics = str(soup)
-           # lyrics lies between up_partition and down_partition
-           up_partition = '<!-- Usage of azlyrics.com content by any third-party lyrics provider is prohibited by our licensing agreement. Sorry about that. -->'
-           down_partition = '<!-- MxM banner -->'
-           lyrics = lyrics.split(up_partition)[1]
-           lyrics = lyrics.split(down_partition)[0]
-           lyrics = lyrics.replace('</div>','').strip()
-           lyrics = lyrics.replace('/','').replace('<br>','').replace('\n',' ').replace('<i>','').replace('\'','').replace('  ','').replace('"','')
-           lyrics = re.sub("[\(\[].*?[\)\]]", "", lyrics)
+            lyric_data = requests.get(lyric_url)
+            soup = BeautifulSoup(lyric_data.text, 'html.parser')
+            lyrics = str(soup)
+            # lyrics lies between up_partition and down_partition
+            up_partition = '<!-- Usage of azlyrics.com content by any third-party lyrics provider is prohibited by our licensing agreement. Sorry about that. -->'
+            down_partition = '<!-- MxM banner -->'
+            lyrics = lyrics.split(up_partition)[1]
+            lyrics = lyrics.split(down_partition)[0]
+            lyrics = lyrics.replace('</div>','').strip()
+            lyrics = lyrics.replace('/','').replace('<br>','').replace('\n',' ').replace('<i>','').replace('\'','').replace('  ','').replace('"','')
+            lyrics = re.sub("[\(\[].*?[\)\]]", "", lyrics)
 
         except Exception as e:
            return "Exception occurred \n" +str(e)
+
 
         lyrics = lyrics.strip()
         lyrics = lyrics.replace('\n',' ')
