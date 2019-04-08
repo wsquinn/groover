@@ -11,7 +11,6 @@ import requests
 import json
 import os
 import spotipy
-import azapi
 from spotipy.oauth2 import SpotifyClientCredentials
 from markupsafe import Markup, escape
 
@@ -84,20 +83,17 @@ def recommendations(artist, title):
 
         if matched_artist.startswith("the"):    # remove starting 'the' from matched_artist e.g. the who -> who
            matched_artist = matched_artist[3:]
-
-        Song = azapi.AZlyric(matched_title, matched_artist)
-
-        lyrics = Song.Get()
-        print(lyrics)
-        lyrics = lyrics.replace('</div>','').strip()
-        lyrics = lyrics.replace('/','').replace('<br>','').replace('\n',' ').replace('<i>','').replace('\'','').replace('  ','').replace('"','')
-        lyrics = re.sub("[\(\[].*?[\)\]]", "", lyrics)
-
+           
+        matched_id = data["message"]["body"]["track"]["track_id"]
+        url = 'track.lyrics.get?track_id={}&format={}'.format(matched_id,'json')
+        req_url = 'http://api.musixmatch.com/ws/1.1/{}&apikey={}'.format(url, os.environ.get("MUSIX_API_KEY"))
+        data = requests.get(req_url)
+        data = json.loads(data.text)
+        lyrics = data["message"]["body"]["lyrics"]["lyrics_body"].split("...")[0]
 
         lyrics = lyrics.strip()
         lyrics = lyrics.replace('\n',' ')
         lyrics = re.sub("[\(\[].*?[\)\]]", "", lyrics)
-        print(lyrics)
 
         model= Doc2Vec.load("d2v.model")
         #to find the vector of a document which is not in training data
