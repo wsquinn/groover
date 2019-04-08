@@ -12,6 +12,7 @@ bs4 = "*"
 Flask-WTF = "*"
 flask = "*"
 spotipy = "*"
+lxml = "*"
 
 [requires]
 python_version = "3.7"
