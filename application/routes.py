@@ -11,6 +11,7 @@ import requests
 import json
 import os
 import spotipy
+import azapi
 from spotipy.oauth2 import SpotifyClientCredentials
 from markupsafe import Markup, escape
 
@@ -84,28 +85,19 @@ def recommendations(artist, title):
         if matched_artist.startswith("the"):    # remove starting 'the' from matched_artist e.g. the who -> who
            matched_artist = matched_artist[3:]
 
-        lyric_url = "http://azlyrics.com/lyrics/"+matched_artist+"/"+matched_title+".html"
-        try:
-            headers = {"User-Agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.119 Safari/537.36"}
-            lyric_data = requests.get(lyric_url, headers=headers)
-            soup = BeautifulSoup(lyric_data.text, 'html.parser')
-            lyrics = str(soup)
-            # lyrics lies between up_partition and down_partition
-            up_partition = '<!-- Usage of azlyrics.com content by any third-party lyrics provider is prohibited by our licensing agreement. Sorry about that. -->'
-            down_partition = '<!-- MxM banner -->'
-            lyrics = lyrics.split(up_partition)[1]
-            lyrics = lyrics.split(down_partition)[0]
-            lyrics = lyrics.replace('</div>','').strip()
-            lyrics = lyrics.replace('/','').replace('<br>','').replace('\n',' ').replace('<i>','').replace('\'','').replace('  ','').replace('"','')
-            lyrics = re.sub("[\(\[].*?[\)\]]", "", lyrics)
+        Song = azapi.AZlyric(matched_title, matched_artist)
 
-        except Exception as e:
-           return "Exception occurred \n" +str(e)
+        lyrics = Song.Get()
+        print(lyrics)
+        lyrics = lyrics.replace('</div>','').strip()
+        lyrics = lyrics.replace('/','').replace('<br>','').replace('\n',' ').replace('<i>','').replace('\'','').replace('  ','').replace('"','')
+        lyrics = re.sub("[\(\[].*?[\)\]]", "", lyrics)
 
 
         lyrics = lyrics.strip()
         lyrics = lyrics.replace('\n',' ')
         lyrics = re.sub("[\(\[].*?[\)\]]", "", lyrics)
+        print(lyrics)
 
         model= Doc2Vec.load("d2v.model")
         #to find the vector of a document which is not in training data
