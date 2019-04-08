@@ -25,7 +25,8 @@ class AZlyric:
         self.artist = Artist.replace(' ','').lower()
 
     def Get(self, save = False):
-        page = requests.get(f'https://www.azlyrics.com/lyrics/{self.artist}/{self.title}.html')
+        headers = { 'User-Agent': 'Mozilla/5.0 (Windows NT 6.0; WOW64; rv:24.0) Gecko/20100101 Firefox/24.0' }
+        page = requests.get(f'http://www.azlyrics.com/lyrics/{self.artist}/{self.title}.html', headers=headers)
         tree = html.fromstring(page.content)
         data = tree.xpath('/html/body/div[3]/div/div[2]/div[5]//text()')
         lyrics = ''.join(data[1:])
