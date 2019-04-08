@@ -83,10 +83,11 @@ def recommendations(artist, title):
 
         if matched_artist.startswith("the"):    # remove starting 'the' from matched_artist e.g. the who -> who
            matched_artist = matched_artist[3:]
-           
+
         lyric_url = "http://azlyrics.com/lyrics/"+matched_artist+"/"+matched_title+".html"
         try:
-            lyric_data = requests.get(lyric_url)
+            headers = {"User-Agent": "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.119 Safari/537.36"}
+            lyric_data = requests.get(lyric_url, headers=headers)
             soup = BeautifulSoup(lyric_data.text, 'html.parser')
             lyrics = str(soup)
             # lyrics lies between up_partition and down_partition
